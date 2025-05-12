@@ -1,0 +1,156 @@
+global:
+  ingress:
+    enabled: false    
+  envs:
+    PING_IDENTITY_ACCEPT_EULA: "YES"
+    MUTE_LICENSE_VERIFICATION: "TRUE"
+    JAVA_RAM_PERCENTAGE: "80"
+    USER_BASE_DN: "dc=identity,o=netbr"
+    PF_ENGINE_PUBLIC_HOSTNAME: "auth.identity.net.br"
+    PF_ENGINE_PUBLIC_PORT_HTTPS: "443"
+    pf.server.baseURL: "https://auth.identity.net.br:443"
+  image:
+    repository: pingidentity
+    repositoryFqn:
+    name:
+    tag: "latest"
+    pullPolicy: Always
+
+  privateCert:
+    generate: false
+
+#############################################################
+# pingdirectory values
+#############################################################
+
+pingdirectory:
+  enabled: true
+  envs:
+    SERVER_PROFILE_URL: https://github.com/r4ph4r0ck5/cellpoc.git
+    SERVER_PROFILE_PATH: pingdirectory
+    MAKELDIF_USERS: "10"    
+    MOTD_URL: ""
+  secretVolumes:
+    pingdirectory-license:
+      items:
+        PingDirectory.lic: "/opt/staging/pd.profile/server-root/pre-setup/PingDirectory.lic"
+  container:
+    replicaCount: 1
+    resources:
+      requests:
+        cpu: 1
+        memory: 4Gi
+      limits:
+        cpu: 2
+        memory: 6Gi
+    probes:
+      livenessProbe:
+          exec:
+            command:
+              - /opt/liveness.sh
+          initialDelaySeconds: 300
+          periodSeconds: 30
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 4
+      readinessProbe:
+        exec:
+          command:
+            - /opt/readiness.sh
+        initialDelaySeconds: 300
+        periodSeconds: 5
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 4
+      startupProbe:
+        exec:
+          command:
+            - /opt/liveness.sh
+        initialDelaySeconds: 300
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 90
+  workload:
+    type: StatefulSet
+    statefulSet:
+      persistentvolume:
+        volumes:
+          out-dir:
+            persistentVolumeClaim:
+              resources:
+                requests:
+                  storage: 8Gi
+
+#############################################################
+# pingdatasync values
+#############################################################
+
+pingdatasync:
+  enabled: false
+  name: pingdatasync
+  secretVolumes:
+    pingdirectory-license:
+      items:
+        PingDirectory.lic: "/opt/staging/pd.profile/server-root/pre-setup/PingDirectory.lic"
+  image:
+    name: pingdatasync
+
+  workload:
+    type: StatefulSet
+
+  container:
+    resources:
+      requests:
+        cpu: 0
+        memory: .5Gi
+      limits:
+        cpu: 2
+        memory: 4Gi
+
+  services:
+    ldaps:
+      servicePort: 636
+      containerPort: 1636
+      clusterService: true
+    https:
+      servicePort: 443
+      containerPort: 1443
+      dataService: true
+    clusterServiceName: pingdatasync-cluster
+
+#############################################################
+# pingfederate-admin values
+#############################################################
+
+pingfederate-admin:
+    enabled: true
+    envs:
+      SERVER_PROFILE_URL: https://github.com/r4ph4r0ck5/cellpoc.git
+      SERVER_PROFILE_PATH: pingfederate
+
+    secretVolumes:
+      pingfederate-license:
+        items:
+          pingfed.lic: "/opt/in/instance/server/default/conf/pingfederate.lic"
+ 
+#############################################################
+# pingfederate-engine values
+#############################################################
+pingfederate-engine:
+    enabled: true
+    envs:
+      SERVER_PROFILE_URL: https://github.com/r4ph4r0ck5/cellpoc.git
+      SERVER_PROFILE_PATH: pingfederate
+    container:
+      replicaCount: 1
+      resources:
+       requests:
+         cpu: 1
+         memory: 4Gi
+       limits:
+         cpu: 2
+         memory: 4Gi  
+    secretVolumes:
+     pingfederate-license:
+       items:
+         pingfed.lic: "/opt/in/instance/server/default/conf/pingfederate.lic"
