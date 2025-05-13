@@ -5,6 +5,7 @@ global:
     PING_IDENTITY_ACCEPT_EULA: "YES"
     MUTE_LICENSE_VERIFICATION: "TRUE"
     JAVA_RAM_PERCENTAGE: "80"
+    JVM_TUNING:	"AGGRESSIVE"
     USER_BASE_DN: "dc=identity,o=netbr"
     PF_ENGINE_PUBLIC_HOSTNAME: "auth.identity.net.br"
     PF_ENGINE_PUBLIC_PORT_HTTPS: "443"
@@ -14,7 +15,7 @@ global:
     repositoryFqn:
     name:
     tag: "latest"
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
   privateCert:
     generate: false
@@ -38,8 +39,8 @@ pingdirectory:
     replicaCount: 1
     resources:
       requests:
-        cpu: 1
-        memory: 4Gi
+        cpu: 2
+        memory: 6Gi
       limits:
         cpu: 2
         memory: 6Gi
