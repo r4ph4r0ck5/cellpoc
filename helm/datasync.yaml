@@ -1,0 +1,57 @@
+global:
+  ingress:
+    enabled: false    
+  envs:
+    PING_IDENTITY_ACCEPT_EULA: "YES"
+    MUTE_LICENSE_VERIFICATION: "TRUE"
+    JAVA_RAM_PERCENTAGE: "80"
+    JVM_TUNING:	"AGGRESSIVE"
+    USER_BASE_DN: "dc=identity,o=netbr"
+    PF_ENGINE_PUBLIC_HOSTNAME: "auth.identity.net.br"
+    PF_ENGINE_PUBLIC_PORT_HTTPS: "443"
+    pf.server.baseURL: "https://auth.identity.net.br:443"
+  image:
+    repository: pingidentity
+    repositoryFqn:
+    name:
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  privateCert:
+    generate: false
+
+pingdataconsole:
+  enabled: true
+
+pingdatasync:
+  enabled: true
+  name: pingdatasync
+  secretVolumes:
+    pingdirectory-license:
+      items:
+        PingDirectory.lic: "/opt/staging/pd.profile/server-root/pre-setup/PingDirectory.lic"
+  image:
+    name: pingdatasync
+
+  workload:
+    type: StatefulSet
+
+  container:
+    resources:
+      requests:
+        cpu: 0
+        memory: .5Gi
+      limits:
+        cpu: 2
+        memory: 4Gi
+
+  services:
+    ldaps:
+      servicePort: 636
+      containerPort: 1636
+      clusterService: true
+    https:
+      servicePort: 443
+      containerPort: 1443
+      dataService: true
+    clusterServiceName: pingdatasync-cluster
