@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-balancer-config
+  namespace: default
+data:
+  nginx.conf: |
+    worker_processes 1;
+
+    events {
+      worker_connections 1024;
+    }
+
+    http {
+      upstream pfed {
+        ip_hash;
+        server cell1-pingfederate-engine.default.svc.cluster.local:9031;
+        server shadow1-pingfederate-engine.default.svc.cluster.local:9031;
+      }
+
+      server {
+        listen 9031;
+
+        location / {
+          proxy_pass https://pfed;
+          proxy_ssl_verify off;
+          proxy_ssl_server_name on;
+        }
+      }
+    }
