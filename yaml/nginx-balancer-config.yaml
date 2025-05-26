@@ -14,8 +14,8 @@ data:
     http {
       upstream pfed {
         ip_hash;
-        server cell1-pingfederate-engine.default.svc.cluster.local:9031;
-        server shadow1-pingfederate-engine.default.svc.cluster.local:9031;
+        server cell1-pingfederate-engine:9031;
+        server shadow1-pingfederate-engine:9031;
       }
 
       server {

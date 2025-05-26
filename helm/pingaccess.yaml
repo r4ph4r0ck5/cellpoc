@@ -1,0 +1,43 @@
+global:
+  ingress:
+    enabled: false
+    defaultTlsSecret:
+    annotations: {}
+  envs:
+    PING_IDENTITY_ACCEPT_EULA: "YES"
+  image:
+    repository: pingidentity
+    repositoryFqn:
+    name:
+    tag: "edge"
+    pullPolicy: Always
+
+#############################################################
+# pingaccess-admin values
+#############################################################
+pingaccess-admin:
+  enabled: true
+  envs:
+    SERVER_PROFILE_URL: https://github.com/r4ph4r0ck5/cellpoc.git
+    SERVER_PROFILE_PATH: pingaccess
+  secretVolumes:
+    pingaccess-license:
+      items:
+        pingaccess.lic: "/opt/in/instance/conf/pingaccess.lic"
+  workload:
+    type: Deployment
+
+#############################################################
+# pingaccess-engine values
+#############################################################
+pingaccess-engine:
+  enabled: true
+  envs:
+    SERVER_PROFILE_URL: https://github.com/r4ph4r0ck5/cellpoc.git
+    SERVER_PROFILE_PATH: pingaccess
+  secretVolumes:
+    pingaccess-license:
+      items:
+        pingaccess.lic: "/opt/in/instance/conf/pingaccess.lic"
+  workload:
+    type: Deployment
