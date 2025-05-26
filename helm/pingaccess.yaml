@@ -9,7 +9,7 @@ global:
     repository: pingidentity
     repositoryFqn:
     name:
-    tag: "edge"
+    tag: "latest"
     pullPolicy: Always
 
 #############################################################
