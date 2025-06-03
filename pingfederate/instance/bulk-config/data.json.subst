@@ -497,9 +497,9 @@
                         "enableIdpDiscovery": true
                     },
                     "federationInfo": {
-                        "baseUrl": "https://cell1-pingfederate-engine:9031",
-                        "saml2EntityId": "https://cell1-pingfederate-engine:9031",
-                        "saml1xIssuerId": "localhost:default:entityId",
+                        "baseUrl": "https://auth.identity.net.br:443",
+                        "saml2EntityId": "https://auth.identity.net.br:443",
+                        "saml1xIssuerId": "identitynetbr:default:entityId",
                         "saml1xSourceId": "",
                         "wsfedRealm": ""
                     },
